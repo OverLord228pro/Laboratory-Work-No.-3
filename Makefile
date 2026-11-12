@@ -8,5 +8,8 @@ main.o: main.c deque.h
 deque.o: deque.c deque.h
 	gcc -c -o deque.o deque.c
 
-a.exe: main.o deque.o
-	gcc main.o deque.o
+sort.o: sort.c sort.h
+	gcc -c -o sort.o sort.c
+
+a.exe: main.o deque.o sort.o
+	gcc main.o deque.o sort.o
