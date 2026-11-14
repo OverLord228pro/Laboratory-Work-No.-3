@@ -6,7 +6,6 @@ void deque_init(Deque *deque)
 {
     deque->front = NULL;
     deque->back = NULL;
-    deque->size = 0;
 }
 
 int deque_push_back(Deque *deque, double value)
@@ -43,7 +42,6 @@ int deque_push_back(Deque *deque, double value)
     }
 
     deque->back = node;
-    deque->size++;
     return 1;
 }
 
@@ -81,7 +79,6 @@ int deque_push_front(Deque *deque, double value)
     }
 
     deque->front = node;
-    deque->size++;
     return 1;
 }
 
@@ -121,7 +118,6 @@ int deque_pop_front(Deque *deque, double *value)
     }
 
     free(node);
-    deque->size--;
     return 1;
 }
 
@@ -149,16 +145,29 @@ int deque_pop_back(Deque *deque, double *value)
     }
 
     free(node);
-    deque->size--;
     return 1;
 }
 
-int deque_set(Deque *deque, int pos, double value)
+int deque_size(Deque *deque)
+{
+    int size = 0;
+    DequeNode *node = deque->front;
+
+    while (node != NULL) 
+    {
+        size++;
+        node = node->next;
+    }
+
+    return size;
+}
+
+int deque_change(Deque *deque, int pos, double value)
 {
     DequeNode *node;
     int i;
 
-    if (pos < 0 || pos >= deque->size) 
+    if (pos < 0 || pos >= deque_size(deque)) 
     {
         return 0;
     }
@@ -188,4 +197,30 @@ void deque_print(Deque *deque)
     }
 
     printf("\n");
+}
+
+int deque_copy(Deque *copied_deque, Deque *deque)
+{
+    DequeNode *current;
+
+    if (copied_deque == NULL || deque == NULL ||
+        copied_deque == deque)
+    {
+        return 0;
+    }
+
+    current = deque->front;
+
+    while (current != NULL)
+    {
+        if (deque_push_back(copied_deque, current->value) == 0)
+        {
+            deque_clear(copied_deque);
+            return 0;
+        }
+
+        current = current->next;
+    }
+
+    return 1;
 }

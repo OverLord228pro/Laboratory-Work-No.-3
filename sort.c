@@ -37,23 +37,29 @@ void swap(Deque *deque, DequeNode *left)
     left->prev = right;
 }
 
-void bubble_sort(Deque *deque)
+int bubble_sort(Deque *deque, Deque *copied_deque)
 {
     short int swapped;
     DequeNode *current;
-    if (deque == NULL || deque->size < 2) 
+    int size;
+    if (deque_copy(copied_deque, deque) == 0)
     {
-        return;
+        return 0;
+    }
+    size = deque_size(copied_deque);
+    if (size < 2) 
+    {
+        return 1;
     }
     while (1)
     {
         swapped = 0;
-        current = deque->front;
+        current = copied_deque->front;
         while (current != NULL && current->next != NULL)
         {
             if (current->value > current->next->value)
             {
-                swap(deque, current);
+                swap(copied_deque, current);
                 swapped = 1;
             }
             else
@@ -63,7 +69,7 @@ void bubble_sort(Deque *deque)
         }
         if (swapped == 0)
         {
-            return;
+            return 1;
         }
     }
 }
@@ -72,7 +78,8 @@ DequeNode *deque_get_node(Deque *deque, int index)
 {
     DequeNode *current;
     int i;
-    if (deque == NULL || index < 0 || index >= deque->size) 
+    int size = deque_size(deque);
+    if (deque == NULL || index < 0 || index >= size) 
     {
         return NULL;
     }
@@ -154,74 +161,67 @@ void swap_nodes(Deque *deque, DequeNode *node1, DequeNode *node2)
     node2->next = next1;
 }
 
-void sift_down(Deque *deque, int index, int heap_size)
+void heapify(Deque *deque, int index, int heap_size)
 {
-    DequeNode *parent;
-    DequeNode *largest;
-    DequeNode *right;
-    int left_index;
-    int right_index;
-    int largest_index;
-
-    if (deque == NULL || heap_size < 2 ||
-        heap_size > deque->size || index < 0 || index >= heap_size)
+    int largest = index;
+    int left = index * 2 + 1;
+    int right = index * 2 + 2;
+    DequeNode *parent = deque_get_node(deque, largest);
+    DequeNode *left_node = deque_get_node(deque, left);
+    DequeNode *right_node = deque_get_node(deque, right);
+    if (left_node != NULL && left_node->value > parent->value)
     {
-        return;
+        largest = left;
     }
-
-    parent = deque_get_node(deque, index);
-
-    while (index < heap_size / 2)
+    if (largest == left)
     {
-        left_index = 2 * index + 1;
-        right_index = left_index + 1;
-
-        largest_index = left_index;
-        largest = deque_get_node(deque, left_index);
-
-        if (right_index < heap_size)
+        if (right_node != NULL && right_node->value > left_node->value)
         {
-            right = deque_get_node(deque, right_index);
-
-            if (right->value > largest->value)
-            {
-                largest = right;
-                largest_index = right_index;
-            }
+            largest = right;
         }
-
-        if (parent->value >= largest->value)
+    }
+    else
+    {
+        if (right_node != NULL && right_node->value > parent->value)
         {
-            return;
+            largest = right;
         }
-
-        swap_nodes(deque, parent, largest);
-
-        index = largest_index;
+    }
+    if (largest != index)
+    {
+        if (largest == left)
+        {
+            swap_nodes(deque, parent, left_node);
+        }
+        else
+        {
+            swap_nodes(deque, parent, right_node);
+        }
+        heapify(deque, largest, heap_size);
     }
 }
 
-void heap_sort(Deque *deque)
+int pyramid_sort(Deque *deque, Deque *copied_deque)
 {
-    DequeNode *last;
     int i;
-
-    if (deque == NULL || deque->size < 2)
+    int size;
+    if (deque_copy(copied_deque, deque) == 0)
     {
-        return;
+        return 0;
     }
-
-    for (i = deque->size / 2 - 1; i >= 0; i--)
+    size = deque_size(copied_deque);
+    if (size < 2) 
     {
-        sift_down(deque, i, deque->size);
+        return 1;
     }
-
-    for (i = deque->size - 1; i > 0; i--)
+    for (i = size / 2 - 1; i >= 0; i--)
     {
-        last = deque_get_node(deque, i);
-
-        swap_nodes(deque, deque->front, last);
-
-        sift_down(deque, 0, i);
+        heapify(copied_deque, i, size);
     }
+    for (i = size - 1; i >= 0; i--)
+    {
+        swap_nodes(copied_deque, copied_deque->front, deque_get_node(copied_deque, i));
+        heapify(copied_deque, 0, i);
+    }
+    return 1;
 }
