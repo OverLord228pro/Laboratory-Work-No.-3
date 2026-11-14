@@ -2,7 +2,7 @@
 #include "deque.h"
 #include "sort.h"
 #include <locale.h>
-#include <float.h>
+#include <limits.h>
 #include <string.h>
 #include "input.h"
 
@@ -102,7 +102,7 @@ int main(void)
         if (mode == 1)
         {
             printf("Введите числа через пробел(длина строки не более 1000 символов).\n");
-            printf("Разрешены целые, дробные и отрицательные числа, модуль которых не прeвышает %.16e.\n", DBL_MAX);
+            printf("Разрешены целые числа от %d до %d.\n", INT_MIN, INT_MAX);
             printf("Числа: ");
             if (fgets(line, sizeof(line), stdin) == NULL)
             {
@@ -124,20 +124,10 @@ int main(void)
             if (result == 0)
             {
                 printf("Ошибка: некорректный ввод чисел.\n");
-                if (repeat() == 0)
-                {
-                    return 0;
-                }
-                continue;
             }
             else if (result == -1)
             {
                 printf("Ошибка: недостаточно памяти для хранения чисел.\n");
-                if (repeat() == 0)
-                {
-                    return 0;
-                }
-                return 0;
             }
             else
             {
@@ -153,15 +143,10 @@ int main(void)
                 }
                 else
                 {
-                    printf("Ошибка: не удалось создать копию для сортировки.\n");
-                    if (repeat() == 0)
-                    {
-                        return 0;
-                    }
+                    printf("Ошибка: не удалось создать копию для сортировки пузырьком.\n");
                 }
 
                 deque_clear(&copied_deque);
-                deque_init(&copied_deque);
 
                 if (pyramid_sort(&deque, &copied_deque) == 1)
                 {
@@ -170,17 +155,16 @@ int main(void)
                 }
                 else
                 {
-                    printf("Ошибка: не удалось создать копию для сортировки.\n");
-                    if (repeat() == 0)
-                    {
-                        return 0;
-                    }
+                    printf("Ошибка: не удалось создать копию для пирамидальной сортировки.\n");
                 }
-
+                
                 deque_clear(&copied_deque);
             }
             deque_clear(&deque);
-            
+            if (repeat() == 0)
+            {
+                return 0;
+            }
         }
         else
         {
@@ -188,5 +172,4 @@ int main(void)
         }
 
     }
-    return 0;
 }

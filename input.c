@@ -1,7 +1,11 @@
 #include "input.h"
-#include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
 
 void read_rest_of_input(void)
 {
@@ -15,41 +19,22 @@ void read_rest_of_input(void)
     }
 }
 
-void replace_commas(char *line)
-{
-    if (line == NULL)
-    {
-        return;
-    }
-
-    while (*line != '\0')
-    {
-        if (*line == ',')
-        {
-            *line = '.';
-        }
-        line++;
-    }
-}
-
 int parse_numbers(Deque *deque, char *line)
 {
     char *current;
     char *end;
-    double value;
+    long value;
 
     if (deque == NULL || line == NULL)
     {
         return 0;
     }
 
-    replace_commas(line);
-
     current = line;
 
     while (*current != '\0')
     {
-        while (*current == ' ')
+        while (isspace((unsigned char)*current))
         {
             current++;
         }
@@ -60,21 +45,21 @@ int parse_numbers(Deque *deque, char *line)
         }
 
         errno = 0;
-        value = strtod(current, &end);
+        value = strtol(current, &end, 10);
 
-        if (end == current || errno == ERANGE || !isfinite(value))
+        if (end == current || errno == ERANGE || value < INT_MIN || value > INT_MAX)
         {
             deque_clear(deque);
             return 0;
         }
 
-        if (*end != '\0' && *end != ' ' && *end != '\n')
+        if (*end != '\0' && !isspace((unsigned char)*end))
         {
             deque_clear(deque);
             return 0;
         }
 
-        if (deque_push_back(deque, value) == 0)
+        if (deque_push_back(deque, (int)value) == 0)
         {
             deque_clear(deque);
             return -1;
@@ -83,7 +68,7 @@ int parse_numbers(Deque *deque, char *line)
         current = end;
     }
 
-    if (deque_size(deque) > 0)
+    if (deque->front != NULL)
     {
         return 1;
     }

@@ -8,7 +8,7 @@ void deque_init(Deque *deque)
     deque->back = NULL;
 }
 
-int deque_push_back(Deque *deque, double value)
+int deque_push_back(Deque *deque, int value)
 {
     short int attempt = 0;
     DequeNode *node;
@@ -45,7 +45,7 @@ int deque_push_back(Deque *deque, double value)
     return 1;
 }
 
-int deque_push_front(Deque *deque, double value)
+int deque_push_front(Deque *deque, int value)
 {
     short int attempt = 0;
     DequeNode *node;
@@ -97,7 +97,7 @@ void deque_clear(Deque *deque)
     deque_init(deque);
 }
 
-int deque_pop_front(Deque *deque, double *value)
+int deque_pop_front(Deque *deque, int *value)
 {
     DequeNode *node;
     if (deque->front == NULL) 
@@ -121,7 +121,7 @@ int deque_pop_front(Deque *deque, double *value)
     return 1;
 }
 
-int deque_pop_back(Deque *deque, double *value)
+int deque_pop_back(Deque *deque, int *value)
 {
     DequeNode *node;
 
@@ -162,7 +162,7 @@ int deque_size(Deque *deque)
     return size;
 }
 
-int deque_change(Deque *deque, int pos, double value)
+int deque_change(Deque *deque, int pos, int value)
 {
     DequeNode *node;
     int i;
@@ -192,7 +192,7 @@ void deque_print(Deque *deque)
 
     while (node != NULL) 
     {
-        printf("%f ", node->value);
+        printf("%d ", node->value);
         node = node->next;
     }
 

@@ -169,20 +169,20 @@ void heapify(Deque *deque, int index, int heap_size)
     DequeNode *parent = deque_get_node(deque, largest);
     DequeNode *left_node = deque_get_node(deque, left);
     DequeNode *right_node = deque_get_node(deque, right);
-    if (left_node != NULL && left_node->value > parent->value)
+    if (left < heap_size && left_node != NULL && left_node->value > parent->value)
     {
         largest = left;
     }
     if (largest == left)
     {
-        if (right_node != NULL && right_node->value > left_node->value)
+        if (right < heap_size && right_node != NULL && right_node->value > left_node->value)
         {
             largest = right;
         }
     }
     else
     {
-        if (right_node != NULL && right_node->value > parent->value)
+        if (right < heap_size && right_node != NULL && right_node->value > parent->value)
         {
             largest = right;
         }
@@ -218,7 +218,7 @@ int pyramid_sort(Deque *deque, Deque *copied_deque)
     {
         heapify(copied_deque, i, size);
     }
-    for (i = size - 1; i >= 0; i--)
+    for (i = size - 1; i > 0; i--)
     {
         swap_nodes(copied_deque, copied_deque->front, deque_get_node(copied_deque, i));
         heapify(copied_deque, 0, i);

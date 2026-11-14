@@ -4,7 +4,7 @@
 #include "deque.h"
 
 void swap(Deque *deque, DequeNode *left);
-void bubble_sort(Deque *deque, Deque *copied_deque);
+int bubble_sort(Deque *deque, Deque *copied_deque);
 DequeNode *deque_get_node(Deque *deque, int index);
 void swap_nodes(Deque *deque, DequeNode *node1, DequeNode *node2);
 void heapify(Deque *deque, int index, int heap_size);
