@@ -2,9 +2,12 @@
 #include "deque.h"
 #include "sort.h"
 #include <locale.h>
-#include <limits.h>
 #include <string.h>
 #include "input.h"
+#include "file.h"
+#include <stdlib.h>
+#include <time.h>
+#include <limits.h>
 
 int repeat(void)
 {
@@ -50,126 +53,218 @@ int repeat(void)
     }
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
     Deque deque;
     Deque copied_deque;
     char line[maxx];
     short int result;
-    short int mode;
+    short int file_ok;
+    FILE *file;
+    double bubble_seconds;
+    double pyramid_seconds; 
     setlocale(LC_ALL, "Russian");
+
+    if (argc != 1 && !(argc == 3 && strcmp(argv[1], "--file") == 0) && !(argc == 2 && strcmp(argv[1], "--compare") == 0))
+    {
+        printf("Запуск: a.exe, a.exe --file имя_файла или a.exe --compare\n");
+        return 1;
+    }
+
+    srand((unsigned int)time(NULL));
+    if (!generate_file("input_500.txt", 500) || !generate_file("input_1000.txt", 1000) ||
+        !generate_file("input_3000.txt", 3000) || !generate_file("input_5000.txt", 5000) ||
+        !generate_file("input_7000.txt", 7000) || !generate_file("input_9000.txt", 9000) ||
+        !generate_file("input_10000.txt", 10000))
+    {
+        printf("Ошибка создания тестовых файлов.\n");
+        if (repeat() == 0)
+        {
+            return 0;
+        }
+    }
+
+    if (argc == 2)
+    {
+        while (1)
+        {
+            result = compare_files();
+
+            if (result)
+            {
+                printf("Измерения сохранены в times.csv.\n");
+            }
+            else
+            {
+                printf("Ошибка обработки файлов или записи измерений.\n");
+            }
+
+            if (repeat() == 0)
+            {
+                return result == 0;
+            }
+        }
+    }
+
+    if (argc == 3)
+    {
+        while (1)
+        {
+            result = print_file(argv[2]);
+
+            if (result == 0)
+            {
+                printf("Ошибка при работе с файлом.\n");
+            }
+            if (result == 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
     while(1)
     {
-        printf("Выберите действие:(1 — Ввести числа самостоятельно, 2 — Посмотреть готовые результаты из файла):\n");
+        printf("Введите числа через пробел(длина строки не более 1000 символов).\n");
+        printf("Разрешены целые числа от %d до %d.\n", INT_MIN, INT_MAX);
+        printf("Числа: ");
         if (fgets(line, sizeof(line), stdin) == NULL)
         {
             printf("Ошибка: ввод завершён или произошла ошибка чтения.\n");
             return 0;
         }
-
         if (strchr(line, '\n') == NULL)
         {
             read_rest_of_input();
-            printf("Ошибка: слишком длинный ввод. Введите 1 или 2.\n");
+            printf("Ошибка: слишком длинный ввод. Допускается не более 1000 символов.\n");
             if (repeat() == 0)
             {
                 return 0;
             }
             continue;
         }
-
-        line[strcspn(line, "\n")] = '\0';
-
-        if (strcmp(line, "1") == 0)
+        deque_init(&deque);
+        result = parse_numbers(&deque, line);
+        if (result == 0)
         {
-            mode = 1;
+            printf("Ошибка: некорректный ввод чисел.\n");
         }
-
-        else if (strcmp(line, "2") == 0)
+        else if (result == -1)
         {
-            mode = 2;
+            printf("Ошибка: недостаточно памяти для хранения чисел.\n");
         }
         else
         {
-            printf("Ошибка: некорректный выбор. Введите 1 или 2.\n");
-            if (repeat() == 0)
-            {
-                return 0;
-            }
-            continue;
-        }
+            printf("Введенные числа: ");
+            deque_print(&deque);
+            file_ok = 1;
+            file = fopen("results.txt", "w");
 
-        if (mode == 1)
-        {
-            printf("Введите числа через пробел(длина строки не более 1000 символов).\n");
-            printf("Разрешены целые числа от %d до %d.\n", INT_MIN, INT_MAX);
-            printf("Числа: ");
-            if (fgets(line, sizeof(line), stdin) == NULL)
+            if (file == NULL)
             {
-                printf("Ошибка: ввод завершён или произошла ошибка чтения.\n");
-                return 0;
-            }
-            if (strchr(line, '\n') == NULL)
-            {
-                read_rest_of_input();
-                printf("Ошибка: слишком длинный ввод. Допускается не более 1000 символов.\n");
-                if (repeat() == 0)
-                {
-                    return 0;
-                }
-                continue;
-            }
-            deque_init(&deque);
-            result = parse_numbers(&deque, line);
-            if (result == 0)
-            {
-                printf("Ошибка: некорректный ввод чисел.\n");
-            }
-            else if (result == -1)
-            {
-                printf("Ошибка: недостаточно памяти для хранения чисел.\n");
+                printf("Ошибка: не удалось открыть файл для записи.\n");
+                file_ok = 0;
             }
             else
             {
-                printf("Введенные числа: ");
-                deque_print(&deque);
-
-                deque_init(&copied_deque);
-
-                if (bubble_sort(&deque, &copied_deque) == 1)
+                if (fprintf(file, "Изначальный дек\n") < 0 || write_deque(file, &deque) == 0)
                 {
-                    printf("Результат сортировки пузырьком: ");
-                    deque_print(&copied_deque);
-                }
-                else
-                {
-                    printf("Ошибка: не удалось создать копию для сортировки пузырьком.\n");
+                    printf("Ошибка записи исходной последовательности.\n");
+                    file_ok = 0;
                 }
 
-                deque_clear(&copied_deque);
-
-                if (pyramid_sort(&deque, &copied_deque) == 1)
+                if (fclose(file) != 0)
                 {
-                    printf("Результат пирамидальной сортировки: ");
-                    deque_print(&copied_deque);
+                    printf("Ошибка закрытия файла.\n");
+                    file_ok = 0;
                 }
-                else
-                {
-                    printf("Ошибка: не удалось создать копию для пирамидальной сортировки.\n");
-                }
-                
-                deque_clear(&copied_deque);
             }
-            deque_clear(&deque);
-            if (repeat() == 0)
+
+            deque_init(&copied_deque);
+
+            if (bubble_sort(&deque, &copied_deque, &bubble_seconds) == 1)
             {
-                return 0;
-            }
-        }
-        else
-        {
-            printf("Будут использованы готовые результаты из файла.\n");
-        }
+                printf("Результат сортировки пузырьком: ");
+                deque_print(&copied_deque);
+                if (file_ok)
+                {
+                    file = fopen("results.txt", "a");
 
+                    if (file == NULL)
+                    {
+                        printf("Ошибка открытия файла для дописывания.\n");
+                        file_ok = 0;
+                    }
+                    else
+                    {
+                        if (fprintf(file, "Сортировка пузырьком\n") < 0 || write_deque(file, &copied_deque) == 0)
+                        {
+                            printf("Ошибка записи результата сортировки.\n");
+                            file_ok = 0;
+                        }
+
+                        if (fclose(file) != 0)
+                        {
+                            printf("Ошибка закрытия файла.\n");
+                            file_ok = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                printf("Ошибка: не удалось создать копию для сортировки пузырьком.\n");
+                file_ok = 0;
+            }
+
+            deque_clear(&copied_deque);
+
+            if (pyramid_sort(&deque, &copied_deque, &pyramid_seconds) == 1)
+            {
+                printf("Результат пирамидальной сортировки: ");
+                deque_print(&copied_deque);
+                if (file_ok)
+                {
+                    file = fopen("results.txt", "a");
+
+                    if (file == NULL)
+                    {
+                        printf("Ошибка открытия файла для дописывания.\n");
+                        file_ok = 0;
+                    }
+                    else
+                    {
+                        if (fprintf(file, "Пирамидальная сортировка\n") < 0 ||
+                            write_deque(file, &copied_deque) == 0)
+                        {
+                            printf("Ошибка записи результата сортировки.\n");
+                            file_ok = 0;
+                        }
+
+                        if (fclose(file) != 0)
+                        {
+                            printf("Ошибка закрытия файла.\n");
+                            file_ok = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                printf("Ошибка: не удалось создать копию для пирамидальной сортировки.\n");
+                file_ok = 0;
+            }
+            
+            deque_clear(&copied_deque);
+        }
+        deque_clear(&deque);
+        if (repeat() == 0)
+        {
+            return 0;
+        }
     }
 }

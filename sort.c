@@ -1,5 +1,6 @@
 #include "sort.h"
-#include <stddef.h>
+#include <stdlib.h>
+#include <time.h>
 
 void swap(Deque *deque, DequeNode *left)
 {
@@ -37,11 +38,13 @@ void swap(Deque *deque, DequeNode *left)
     left->prev = right;
 }
 
-int bubble_sort(Deque *deque, Deque *copied_deque)
+int bubble_sort(Deque *deque, Deque *copied_deque, double *seconds)
 {
+    clock_t start;
     short int swapped;
     DequeNode *current;
     int size;
+    *seconds = 0;
     if (deque_copy(copied_deque, deque) == 0)
     {
         return 0;
@@ -51,6 +54,7 @@ int bubble_sort(Deque *deque, Deque *copied_deque)
     {
         return 1;
     }
+    start = clock();
     while (1)
     {
         swapped = 0;
@@ -69,6 +73,7 @@ int bubble_sort(Deque *deque, Deque *copied_deque)
         }
         if (swapped == 0)
         {
+            *seconds = (double)(clock() - start) / CLOCKS_PER_SEC;
             return 1;
         }
     }
@@ -201,10 +206,12 @@ void heapify(Deque *deque, int index, int heap_size)
     }
 }
 
-int pyramid_sort(Deque *deque, Deque *copied_deque)
+int pyramid_sort(Deque *deque, Deque *copied_deque, double *seconds)
 {
+    clock_t start;
     int i;
     int size;
+    *seconds = 0;
     if (deque_copy(copied_deque, deque) == 0)
     {
         return 0;
@@ -214,6 +221,7 @@ int pyramid_sort(Deque *deque, Deque *copied_deque)
     {
         return 1;
     }
+    start = clock();
     for (i = size / 2 - 1; i >= 0; i--)
     {
         heapify(copied_deque, i, size);
@@ -223,5 +231,6 @@ int pyramid_sort(Deque *deque, Deque *copied_deque)
         swap_nodes(copied_deque, copied_deque->front, deque_get_node(copied_deque, i));
         heapify(copied_deque, 0, i);
     }
+    *seconds = (double)(clock() - start) / CLOCKS_PER_SEC;
     return 1;
 }

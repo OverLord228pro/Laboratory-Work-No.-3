@@ -14,5 +14,8 @@ sort.o: sort.c sort.h deque.h
 input.o: input.c input.h deque.h
 	gcc -c -o input.o input.c
 
-a.exe: main.o deque.o sort.o input.o
-	gcc -o a.exe main.o deque.o sort.o input.o
+file.o: file.c file.h deque.h
+	gcc -c -o file.o file.c
+
+a.exe: main.o deque.o sort.o input.o file.o
+	gcc -o a.exe main.o deque.o sort.o input.o file.o
