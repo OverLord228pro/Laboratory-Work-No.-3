@@ -1,6 +1,7 @@
 #include "sort.h"
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
 
 void swap(Deque *deque, DequeNode *left)
 {

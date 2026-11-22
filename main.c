@@ -80,15 +80,15 @@ int main(int argc, char *argv[])
                 argv[i + 1][0] == '-')
             {
                 printf("Ошибка: после --file укажи имя файла.\n");
-                return 1;
+                return 0;
             }
 
             result = print_file(argv[i + 1]);
 
             if (result == 0)
             {
-                printf("Не удалось прочитать файл: %s\n", argv[i + 1]);
-                return 1;
+                printf("Ошибка: не удалось прочитать файл: %s\n", argv[i + 1]);
+                return 0;
             }
 
             return 0;
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     if (argc != 1 && compare_mode == 0)
     {
         printf("Запуск: a.exe, a.exe --file имя_файла или a.exe --compare\n");
-        return 1;
+        return 0;
     }
 
     if (compare_mode == 1)
@@ -111,10 +111,7 @@ int main(int argc, char *argv[])
             !generate_file("input_10000.txt", 10000))
         {
             printf("Ошибка создания тестовых файлов.\n");
-            if (repeat() == 0)
-            {
-                return 0;
-            }
+            return 0;
         }
 
         while (1)
@@ -137,26 +134,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (argc == 3)
-    {
-        while (1)
-        {
-            result = print_file(argv[2]);
-
-            if (result == 0)
-            {
-                printf("Ошибка при работе с файлом.\n");
-            }
-            if (result == 0)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
 
     while(1)
     {
