@@ -62,37 +62,68 @@ int main(int argc, char *argv[])
     short int file_ok;
     FILE *file;
     double bubble_seconds;
-    double pyramid_seconds; 
+    double pyramid_seconds;
+    int i;
+    short int compare_mode = 0;
     setlocale(LC_ALL, "Russian");
 
-    if (argc != 1 && !(argc == 3 && strcmp(argv[1], "--file") == 0) && !(argc == 2 && strcmp(argv[1], "--compare") == 0))
+    for (i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--compare") == 0)
+        {
+            compare_mode = 1;
+            break;
+        }
+        if (strcmp(argv[i], "--file") == 0)
+        {
+            if (i + 1 >= argc || argv[i + 1][0] == '\0' ||
+                argv[i + 1][0] == '-')
+            {
+                printf("Ошибка: после --file укажи имя файла.\n");
+                return 1;
+            }
+
+            result = print_file(argv[i + 1]);
+
+            if (result == 0)
+            {
+                printf("Не удалось прочитать файл: %s\n", argv[i + 1]);
+                return 1;
+            }
+
+            return 0;
+        }
+    }
+
+    if (argc != 1 && compare_mode == 0)
     {
         printf("Запуск: a.exe, a.exe --file имя_файла или a.exe --compare\n");
         return 1;
     }
 
-    srand((unsigned int)time(NULL));
-    if (!generate_file("input_500.txt", 500) || !generate_file("input_1000.txt", 1000) ||
-        !generate_file("input_3000.txt", 3000) || !generate_file("input_5000.txt", 5000) ||
-        !generate_file("input_7000.txt", 7000) || !generate_file("input_9000.txt", 9000) ||
-        !generate_file("input_10000.txt", 10000))
+    if (compare_mode == 1)
     {
-        printf("Ошибка создания тестовых файлов.\n");
-        if (repeat() == 0)
+        
+        srand((unsigned int)time(NULL));
+        if (!generate_file("input_500.txt", 500) || !generate_file("input_1000.txt", 1000) ||
+            !generate_file("input_3000.txt", 3000) || !generate_file("input_5000.txt", 5000) ||
+            !generate_file("input_7000.txt", 7000) || !generate_file("input_9000.txt", 9000) ||
+            !generate_file("input_10000.txt", 10000))
         {
-            return 0;
+            printf("Ошибка создания тестовых файлов.\n");
+            if (repeat() == 0)
+            {
+                return 0;
+            }
         }
-    }
 
-    if (argc == 2)
-    {
         while (1)
         {
             result = compare_files();
 
             if (result)
             {
-                printf("Измерения сохранены в times.csv.\n");
+                printf("Измерения сохранены в times.txt.\n");
             }
             else
             {

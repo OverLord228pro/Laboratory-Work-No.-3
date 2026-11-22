@@ -158,16 +158,14 @@ int compare_file(char *filename, FILE *table)
 
     if (result == 1)
     {
-        result = bubble_sort(&deque, &copied_deque,
-                             &bubble_seconds);
+        result = bubble_sort(&deque, &copied_deque, &bubble_seconds);
     }
 
     deque_clear(&copied_deque);
 
     if (result == 1)
     {
-        result = pyramid_sort(&deque, &copied_deque,
-                              &pyramid_seconds);
+        result = pyramid_sort(&deque, &copied_deque, &pyramid_seconds);
     }
 
     if (result == 1)
@@ -176,7 +174,7 @@ int compare_file(char *filename, FILE *table)
         printf("Пузырьковая: %.20f с.\n", bubble_seconds);
         printf("Пирамидальная: %.20f с.\n", pyramid_seconds);
 
-        if (fprintf(table, "%d;%.20f;%.20f\n", count, bubble_seconds, pyramid_seconds) < 0)
+        if (fprintf(table, "%d %.20f %.20f\n", count, bubble_seconds, pyramid_seconds) < 0)
         {
             result = 0;
         }
@@ -198,14 +196,14 @@ int compare_files(void)
     short int result;
     setlocale(LC_ALL, "Russian");
 
-    table = fopen("times.csv", "w");
+    table = fopen("times.txt", "w");
 
     if (table == NULL)
     {
         return 0;
     }
 
-    if (fprintf(table, "количество чисел;пузырьковая;пирамидальная\n") < 0)
+    if (fprintf(table, "количество_чисел пузырьковая пирамидальная\n") < 0)
     {
         fclose(table);
         return 0;
