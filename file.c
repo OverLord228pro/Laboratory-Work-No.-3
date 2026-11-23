@@ -209,13 +209,13 @@ int compare_files(void)
         return 0;
     }
 
-    result = compare_file("input_500.txt", table) &&
-             compare_file("input_1000.txt", table) &&
+    result = compare_file("input_1000.txt", table) &&
              compare_file("input_3000.txt", table) &&
              compare_file("input_5000.txt", table) &&
              compare_file("input_7000.txt", table) &&
              compare_file("input_9000.txt", table) &&
-             compare_file("input_10000.txt", table);
+             compare_file("input_10000.txt", table) &&
+             compare_file("input_20000.txt", table);
 
     if (fclose(table) != 0)
     {

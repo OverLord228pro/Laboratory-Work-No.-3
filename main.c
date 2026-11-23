@@ -67,8 +67,6 @@ int main(int argc, char *argv[])
     short int compare_mode = 0;
     setlocale(LC_ALL, "Russian");
 
-
-    
     for (i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--compare") == 0)
@@ -97,17 +95,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (argc != 1 && compare_mode == 0)
-    {
-        printf("Запуск: a.exe, a.exe --file имя_файла или a.exe --compare\n");
-        return 0;
-    }
-
     if (compare_mode == 1)
     {
         
         srand((unsigned int)time(NULL));
-        if (!generate_file("input_500.txt", 500) || !generate_file("input_1000.txt", 1000) ||
+        if (!generate_file("input_20000.txt", 20000) || !generate_file("input_1000.txt", 1000) ||
             !generate_file("input_3000.txt", 3000) || !generate_file("input_5000.txt", 5000) ||
             !generate_file("input_7000.txt", 7000) || !generate_file("input_9000.txt", 9000) ||
             !generate_file("input_10000.txt", 10000))

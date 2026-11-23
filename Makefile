@@ -1,6 +1,6 @@
-.PHONY: all
+.PHONY: all run
 
-all: a.exe
+all: start
 
 main.o: main.c deque.h sort.h input.h
 	gcc -c -o main.o main.c
@@ -17,5 +17,9 @@ input.o: input.c input.h deque.h
 file.o: file.c file.h deque.h
 	gcc -c -o file.o file.c
 
-a.exe: main.o deque.o sort.o input.o file.o
+start: main.o deque.o sort.o input.o file.o
 	gcc -o a.exe main.o deque.o sort.o input.o file.o
+
+run: input
+	./a.exe
+
