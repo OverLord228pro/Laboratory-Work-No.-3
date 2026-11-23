@@ -8,7 +8,7 @@ typedef struct DequeNode{
     struct DequeNode *next;
 } DequeNode;
 
-typedef struct Deque{
+typedef struct{
     DequeNode *front;
     DequeNode *back;
 } Deque;

@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
     short int compare_mode = 0;
     setlocale(LC_ALL, "Russian");
 
+
+    
     for (i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--compare") == 0)

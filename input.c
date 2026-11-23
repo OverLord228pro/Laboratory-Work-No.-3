@@ -23,7 +23,7 @@ int parse_numbers(Deque *deque, char *line)
 {
     char *current;
     char *end;
-    long value;
+    int value;
 
     if (deque == NULL || line == NULL)
     {
@@ -45,9 +45,9 @@ int parse_numbers(Deque *deque, char *line)
         }
 
         errno = 0;
-        value = strtol(current, &end, 10);
+        value = (int)strtol(current, &end, 10);
 
-        if (end == current || errno == ERANGE || value < INT_MIN || value > INT_MAX)
+        if (end == current || errno == ERANGE)
         {
             deque_clear(deque);
             return 0;
@@ -59,7 +59,7 @@ int parse_numbers(Deque *deque, char *line)
             return 0;
         }
 
-        if (deque_push_back(deque, (int)value) == 0)
+        if (deque_push_back(deque, value) == 0)
         {
             deque_clear(deque);
             return -1;
