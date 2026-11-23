@@ -122,7 +122,7 @@ int read_deque(char *filename, Deque *deque)
     {
         line[strcspn(line, "\n")] = '\0';
 
-        value = (int)strtol(line, &end, 10);
+        value = (int)strtol(line, &end, base);
 
         if (end == line || *end != '\0' || deque_push_back(deque, value) == 0)
         {

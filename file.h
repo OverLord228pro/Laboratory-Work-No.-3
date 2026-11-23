@@ -6,6 +6,7 @@
 #define maxx 1002
 #define min -10000
 #define max 30000
+#define base 10
 
 int write_deque(FILE *file, Deque *deque);
 int print_file(char *filename);
