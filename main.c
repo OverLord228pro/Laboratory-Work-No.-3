@@ -99,10 +99,22 @@ int main(int argc, char *argv[])
     {
         
         srand((unsigned int)time(NULL));
-        if (!generate_file("input_20000.txt", 20000) || !generate_file("input_1000.txt", 1000) ||
-            !generate_file("input_3000.txt", 3000) || !generate_file("input_5000.txt", 5000) ||
-            !generate_file("input_7000.txt", 7000) || !generate_file("input_9000.txt", 9000) ||
-            !generate_file("input_10000.txt", 10000))
+        if (!generate_file("input_100.txt", 100) ||
+            !generate_file("input_200.txt", 200) ||
+            !generate_file("input_300.txt", 300) ||
+            !generate_file("input_400.txt", 400) ||
+            !generate_file("input_500.txt", 500) ||
+            !generate_file("input_600.txt", 600) ||
+            !generate_file("input_700.txt", 700) ||
+            !generate_file("input_800.txt", 800) ||
+            !generate_file("input_900.txt", 900) ||
+            !generate_file("input_1000.txt", 1000) ||
+            !generate_file("input_2000.txt", 2000) ||
+            !generate_file("input_3000.txt", 3000) ||
+            !generate_file("input_4000.txt", 4000) ||
+            !generate_file("input_5000.txt", 5000) ||
+            !generate_file("input_6000.txt", 6000) ||
+            !generate_file("input_7000.txt", 7000))
         {
             printf("Ошибка создания тестовых файлов.\n");
             return 0;

@@ -3,10 +3,8 @@
 
 #include "deque.h"
 
-void swap(Deque *deque, DequeNode *left);
-DequeNode *deque_get_node(Deque *deque, int index, int size);
-void swap_nodes(Deque *deque, DequeNode *node1, DequeNode *node2);
-void heapify(Deque *deque, DequeNode *parent, int index, int heap_size);
+int experimental_sort(Deque *deque, Deque *copied_deque, double *seconds);
+void heapify(Deque *deque, int index, int heap_size, int size);
 int bubble_sort(Deque *deque, Deque *copied_deque, double *seconds);
 int pyramid_sort(Deque *deque, Deque *copied_deque, double *seconds);
 #endif

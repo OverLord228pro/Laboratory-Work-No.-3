@@ -7,7 +7,7 @@
 
 int write_deque(FILE *file, Deque *deque)
 {
-    DequeNode *current;
+    Deque_node *current;
 
     if (file == NULL || deque == NULL)
     {
@@ -147,6 +147,7 @@ int compare_file(char *filename, FILE *table)
     short int result;
     double bubble_seconds;
     double pyramid_seconds;
+    double experimental_seconds;
 
     deque_init(&deque);
     deque_init(&copied_deque);
@@ -168,13 +169,21 @@ int compare_file(char *filename, FILE *table)
         result = pyramid_sort(&deque, &copied_deque, &pyramid_seconds);
     }
 
+    deque_clear(&copied_deque);
+
+    if (result == 1)
+    {
+        result = experimental_sort(&deque, &copied_deque, &experimental_seconds);
+    }
+
     if (result == 1)
     {
         printf("\nКоличество чисел: %d\n", count);
         printf("Пузырьковая: %.20f с.\n", bubble_seconds);
         printf("Пирамидальная: %.20f с.\n", pyramid_seconds);
+        printf("Экспериментальная: %.20f с.\n", experimental_seconds);
 
-        if (fprintf(table, "%d %.20f %.20f\n", count, bubble_seconds, pyramid_seconds) < 0)
+        if (fprintf(table, "%d %.20f %.20f %.20f\n", count, bubble_seconds, pyramid_seconds, experimental_seconds) < 0)
         {
             result = 0;
         }
@@ -203,19 +212,28 @@ int compare_files(void)
         return 0;
     }
 
-    if (fprintf(table, "количество_чисел пузырьковая пирамидальная\n") < 0)
+    if (fprintf(table, "количество_чисел пузырьковая пирамидальная экспериментальная\n") < 0)
     {
         fclose(table);
         return 0;
     }
 
-    result = compare_file("input_1000.txt", table) &&
-             compare_file("input_3000.txt", table) &&
-             compare_file("input_5000.txt", table) &&
-             compare_file("input_7000.txt", table) &&
-             compare_file("input_9000.txt", table) &&
-             compare_file("input_10000.txt", table) &&
-             compare_file("input_20000.txt", table);
+    result = compare_file("input_100.txt", table) &&
+            compare_file("input_200.txt", table) &&
+            compare_file("input_300.txt", table) &&
+            compare_file("input_400.txt", table) &&
+            compare_file("input_500.txt", table) &&
+            compare_file("input_600.txt", table) &&
+            compare_file("input_700.txt", table) &&
+            compare_file("input_800.txt", table) &&
+            compare_file("input_900.txt", table) &&
+            compare_file("input_1000.txt", table) &&
+            compare_file("input_2000.txt", table) &&
+            compare_file("input_3000.txt", table) &&
+            compare_file("input_4000.txt", table) &&
+            compare_file("input_5000.txt", table) &&
+            compare_file("input_6000.txt", table) &&
+            compare_file("input_7000.txt", table);
 
     if (fclose(table) != 0)
     {
