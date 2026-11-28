@@ -218,22 +218,16 @@ int compare_files(void)
         return 0;
     }
 
-    result = compare_file("input_100.txt", table) &&
-            compare_file("input_200.txt", table) &&
-            compare_file("input_300.txt", table) &&
-            compare_file("input_400.txt", table) &&
-            compare_file("input_500.txt", table) &&
-            compare_file("input_600.txt", table) &&
-            compare_file("input_700.txt", table) &&
-            compare_file("input_800.txt", table) &&
-            compare_file("input_900.txt", table) &&
-            compare_file("input_1000.txt", table) &&
+    result = compare_file("input_1000.txt", table) &&
             compare_file("input_2000.txt", table) &&
             compare_file("input_3000.txt", table) &&
             compare_file("input_4000.txt", table) &&
-            compare_file("input_5000.txt", table) &&
+            compare_file("input_5000.txt", table);
             compare_file("input_6000.txt", table) &&
-            compare_file("input_7000.txt", table);
+            compare_file("input_7000.txt", table) &&
+            compare_file("input_8000.txt", table) &&
+            compare_file("input_9000.txt", table) &&
+            compare_file("input_10000.txt", table);
 
     if (fclose(table) != 0)
     {

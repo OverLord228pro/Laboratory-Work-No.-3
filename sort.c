@@ -4,8 +4,8 @@
 int experimental_sort(Deque *deque, Deque *copied_deque, double *seconds)
 {
     clock_t start;
-    int left;
-    int right;
+    Deque_node *left;
+    Deque_node *right;
     int size;
     int end;
     int i;
@@ -35,47 +35,36 @@ int experimental_sort(Deque *deque, Deque *copied_deque, double *seconds)
     for (end = size - 1; end > 0; end--)
     {
         swapped = 0;
+
         for (i = 0; i < end; i++)
         {
-            deque_pop_front(copied_deque, &left);
+            left = deque_detach_front(copied_deque);
 
-            if (left > copied_deque->front->value)
+            if (left->value > copied_deque->front->value)
             {
-                deque_pop_front(copied_deque, &right);
-                if (deque_push_front(copied_deque, left) == 0 || deque_push_front(copied_deque, right) == 0)
-                {
-                    return 0;
-                }
+                right = deque_detach_front(copied_deque);
+                deque_attach_front(copied_deque, left);
+                deque_attach_back(copied_deque, right);
                 swapped = 1;
             }
             else
             {
-                if (deque_push_front(copied_deque, left) == 0)
-                {
-                    return 0;
-                }
-            }
-
-            deque_pop_front(copied_deque, &left);
-            if (deque_push_back(copied_deque, left) == 0)
-            {
-                return 0;
+                deque_attach_back(copied_deque, left);
             }
         }
 
         for (i = end; i < size; i++)
         {
-            deque_pop_front(copied_deque, &left);
-            if (deque_push_back(copied_deque, left) == 0)
-            {
-                return 0;
-            }
+            left = deque_detach_front(copied_deque);
+            deque_attach_back(copied_deque, left);
         }
+
         if (swapped == 0)
         {
             break;
         }
     }
+
     *seconds = (double)(clock() - start) / CLOCKS_PER_SEC;
     return 1;
 }
@@ -84,8 +73,8 @@ int experimental_sort(Deque *deque, Deque *copied_deque, double *seconds)
 int bubble_sort(Deque *deque, Deque *copied_deque, double *seconds)
 {
     clock_t start;
-    int left;
-    int right;
+    Deque_node *left;
+    Deque_node *right;
     int size;
     int end;
     int i;
@@ -121,42 +110,28 @@ int bubble_sort(Deque *deque, Deque *copied_deque, double *seconds)
         {
             for (j = 0; j < i; j++)
             {
-                if (deque_pop_front(copied_deque, &left) == 0 || deque_push_back(copied_deque, left) == 0)
-                {
-                    return 0;
-                }
+                left = deque_detach_front(copied_deque);
+                deque_attach_back(copied_deque, left);
             }
 
-            if (deque_pop_front(copied_deque, &left) == 0)
-            {
-                return 0;
-            }
+            left = deque_detach_front(copied_deque);
 
-            if (left > copied_deque->front->value)
+            if (left->value > copied_deque->front->value)
             {
-                if (deque_pop_front(copied_deque, &right) == 0 ||
-                    deque_push_front(copied_deque, left) == 0 ||
-                    deque_push_front(copied_deque, right) == 0)
-                {
-                    return 0;
-                }
-
+                right = deque_detach_front(copied_deque);
+                deque_attach_front(copied_deque, left);
+                deque_attach_front(copied_deque, right);
                 swapped = 1;
             }
             else
             {
-                if (deque_push_front(copied_deque, left) == 0)
-                {
-                    return 0;
-                }
+                deque_attach_front(copied_deque, left);
             }
 
             for (j = 0; j < i; j++)
             {
-                if (deque_pop_back(copied_deque, &right) == 0 || deque_push_front(copied_deque, right) == 0)
-                {
-                    return 0;
-                }
+                right = deque_detach_back(copied_deque);
+                deque_attach_front(copied_deque, right);
             }
         }
 
@@ -170,99 +145,104 @@ int bubble_sort(Deque *deque, Deque *copied_deque, double *seconds)
     return 1;
 }
 
-void heap_rotate(Deque *deque, int shift, int size)
+int heap_rotate_values(Deque *deque, int shift)
 {
-    if (shift > size / 2)
-    {
-        shift -= size;
-    }
-    else if (shift < -(size / 2))
-    {
-        shift += size;
-    }
+    int value;
 
     while (shift > 0)
     {
-        deque_attach_back(deque, deque_detach_front(deque));
+        if (deque_pop_front(deque, &value) == 0 || deque_push_back(deque, value) == 0)
+        {
+            return 0;
+        }
         shift--;
     }
 
     while (shift < 0)
     {
-        deque_attach_front(deque, deque_detach_back(deque));
+        if (deque_pop_back(deque, &value) == 0 || deque_push_front(deque, value) == 0)
+        {
+            return 0;
+        }
         shift++;
     }
+
+    return 1;
 }
 
-void heap_swap_nodes(Deque *deque, int first_index, int second_index, int size)
+int heap_value(Deque *deque, int index, int size, int *value)
 {
-    Deque_node *first;
-    Deque_node *second;
+    if (heap_rotate_values(deque, index) == 0)
+    {
+        return 0;
+    }
+
+    *value = deque->front->value;
+    return heap_rotate_values(deque, size - index);
+}
+
+int heap_swap_values(Deque *deque, int first_index, int second_index)
+{
+    int first;
+    int second;
     int between;
 
     between = second_index - first_index - 1;
 
-    heap_rotate(deque, first_index, size);
-    first = deque_detach_front(deque);
-
-    heap_rotate(deque, between, size - 1);
-    second = deque_detach_front(deque);
-
-    deque_attach_front(deque, first);
-    heap_rotate(deque, -between, size - 1);
-
-    deque_attach_front(deque, second);
-    heap_rotate(deque, -first_index, size);
-}
-
-void heapify(Deque *deque, int index, int heap_size, int size)
-{
-    int parent_value;
-    int left_index;
-    int front_index;
-    int child_index;
-    int child_value;
-
-    if (index >= heap_size / 2)
+    if (heap_rotate_values(deque, first_index) == 0 || deque_pop_front(deque, &first) == 0 ||
+        heap_rotate_values(deque, between) == 0 || deque_pop_front(deque, &second) == 0)
     {
-        return;
+        return 0;
     }
 
-    heap_rotate(deque, index, size);
-    parent_value = deque->front->value;
-    heap_rotate(deque, -index, size);
+    return deque_push_front(deque, first) && heap_rotate_values(deque, -between) &&
+           deque_push_front(deque, second) && heap_rotate_values(deque, -first_index);
+}
+
+int heapify(Deque *deque, int index, int heap_size, int size)
+{
+    int parent_value;
+    int child_value;
+    int right_value;
+    int child_index;
 
     while (index < heap_size / 2)
     {
-        left_index = 2 * index + 1;
-        front_index = left_index;
+        child_index = 2 * index + 1;
 
-        if (left_index + 1 < heap_size)
+        if (heap_value(deque, index, size, &parent_value) == 0 || heap_value(deque, child_index, size, &child_value) == 0)
         {
-            front_index++;
+            return 0;
         }
 
-        heap_rotate(deque, front_index, size);
-
-        child_index = front_index;
-        child_value = deque->front->value;
-
-        if (front_index != left_index && deque->back->value >= child_value)
+        if (child_index + 1 < heap_size)
         {
-            child_index = left_index;
-            child_value = deque->back->value;
-        }
+            if (heap_value(deque, child_index + 1, size, &right_value) == 0)
+            {
+                return 0;
+            }
 
-        heap_rotate(deque, -front_index, size);
+            if (right_value > child_value)
+            {
+                child_index++;
+                child_value = right_value;
+            }
+        }
 
         if (parent_value >= child_value)
         {
-            return;
+            return 1;
         }
 
-        heap_swap_nodes(deque, index, child_index, size);
+        if (heap_swap_values(deque, index, child_index) == 0)
+        {
+            return 0;
+        }
+
         index = child_index;
     }
+
+    return 1;
 }
 
 int pyramid_sort(Deque *deque, Deque *copied_deque, double *seconds)
@@ -294,13 +274,21 @@ int pyramid_sort(Deque *deque, Deque *copied_deque, double *seconds)
 
     for (i = size / 2 - 1; i >= 0; i--)
     {
-        heapify(copied_deque, i, size, size);
+        if (heapify(copied_deque, i, size, size) == 0)
+        {
+            deque_clear(copied_deque);
+            return 0;
+        }
     }
 
     for (i = size - 1; i > 0; i--)
     {
-        heap_swap_nodes(copied_deque, 0, i, size);
-        heapify(copied_deque, 0, i, size);
+        if (heap_swap_values(copied_deque, 0, i) == 0 ||
+            heapify(copied_deque, 0, i, size) == 0)
+        {
+            deque_clear(copied_deque);
+            return 0;
+        }
     }
 
     *seconds = (double)(clock() - start) / CLOCKS_PER_SEC;

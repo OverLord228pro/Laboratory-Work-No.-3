@@ -99,22 +99,16 @@ int main(int argc, char *argv[])
     {
         
         srand((unsigned int)time(NULL));
-        if (!generate_file("input_100.txt", 100) ||
-            !generate_file("input_200.txt", 200) ||
-            !generate_file("input_300.txt", 300) ||
-            !generate_file("input_400.txt", 400) ||
-            !generate_file("input_500.txt", 500) ||
-            !generate_file("input_600.txt", 600) ||
-            !generate_file("input_700.txt", 700) ||
-            !generate_file("input_800.txt", 800) ||
-            !generate_file("input_900.txt", 900) ||
-            !generate_file("input_1000.txt", 1000) ||
+        if (!generate_file("input_1000.txt", 1000) ||
             !generate_file("input_2000.txt", 2000) ||
             !generate_file("input_3000.txt", 3000) ||
             !generate_file("input_4000.txt", 4000) ||
             !generate_file("input_5000.txt", 5000) ||
             !generate_file("input_6000.txt", 6000) ||
-            !generate_file("input_7000.txt", 7000))
+            !generate_file("input_7000.txt", 7000) ||
+            !generate_file("input_8000.txt", 8000) ||
+            !generate_file("input_9000.txt", 9000) ||
+            !generate_file("input_10000.txt", 10000))
         {
             printf("Ошибка создания тестовых файлов.\n");
             return 0;
@@ -270,6 +264,44 @@ int main(int argc, char *argv[])
             else
             {
                 printf("Ошибка: не удалось создать копию для пирамидальной сортировки.\n");
+                file_ok = 0;
+            }
+
+            deque_clear(&copied_deque);
+
+            if (experimental_sort(&deque, &copied_deque, &pyramid_seconds) == 1)
+            {
+                printf("Результат экспериментальной сортировки: ");
+                deque_print(&copied_deque);
+                if (file_ok)
+                {
+                    file = fopen("results.txt", "a");
+
+                    if (file == NULL)
+                    {
+                        printf("Ошибка открытия файла для дописывания.\n");
+                        file_ok = 0;
+                    }
+                    else
+                    {
+                        if (fprintf(file, "Эксперимментальная сортировка\n") < 0 ||
+                            write_deque(file, &copied_deque) == 0)
+                        {
+                            printf("Ошибка записи результата сортировки.\n");
+                            file_ok = 0;
+                        }
+
+                        if (fclose(file) != 0)
+                        {
+                            printf("Ошибка закрытия файла.\n");
+                            file_ok = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                printf("Ошибка: не удалось создать копию для экспериментальной сортировки.\n");
                 file_ok = 0;
             }
             
